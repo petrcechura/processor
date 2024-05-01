@@ -52,15 +52,16 @@ class Processor:
                         "SUB *05 1 *05",
                         "BRZ *05 4",
                         "JMP 1",
-                        "SET *02 1" ]
+                        "SET *02 1",
+                        "SET *07 9" ]
 
     def exec_program(self):
-        while(self.program_counter < len(self.program)-1):
+        while(self.register_set.pp_get() < len(self.program)):
             # read the current program counter value 
             self.program_counter = self.ram.read(0)
 
             # get the instruction
-            instruction = self.program[self.program_counter]
+            instruction = self.program[self.register_set.pp_get()]
             
             # try to exec instruction (if core is ready)
             self.exec_line(instruction)

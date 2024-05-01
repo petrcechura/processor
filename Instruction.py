@@ -32,7 +32,7 @@ class Instruction(ABC):
         pass
 
     def __program_counter__(self, val : int = 1) -> None:
-        self.ram.write(0, self.ram.read(0) + val)
+        self.register_set.pp_incr()
 
     # input: string representing either value or address ('*02')
     # output: value
@@ -129,7 +129,7 @@ class JMP(Instruction):
     val : int
 
     def __program_counter__(self) -> None:
-        self.ram.write(0, self.val)
+        self.register_set.pp_set(self.val)
 
     def __exec__(self) -> None:
         self.val = self.__get_value__(self.args[0])
@@ -145,7 +145,7 @@ class BRE(Instruction):
 
 
     def __program_counter__(self) -> None:
-        self.ram.write(0, self.addr)
+        self.register_set.pp_set(self.addr)
 
     def __exec__(self) -> None:
         self.val1 = self.__get_value__(self.args[0])
@@ -153,7 +153,7 @@ class BRE(Instruction):
         if self.val1 == self.val2:
             self.addr = self.addr = self.__get_value__(self.args[2])
         else:
-            self.addr = self.ram.read(0) + 1
+            self.addr = self.register_set.pp_get() + 1
 
 # 'BRZ 0 5'
 class BRZ(Instruction):
@@ -165,11 +165,11 @@ class BRZ(Instruction):
 
 
     def __program_counter__(self) -> None:
-        self.ram.write(0, self.addr)
+        self.register_set.pp_set(self.addr)
 
     def __exec__(self) -> None:
         self.val = self.__get_value__(self.args[0])
         if self.val == 0:
             self.addr = self.addr = self.__get_value__(self.args[1])
         else:
-            self.addr = self.ram.read(0) + 1
+            self.addr = self.register_set.pp_get() + 1
