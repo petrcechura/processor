@@ -1,6 +1,7 @@
 from Ram import Ram
 from Instruction import *
 from ErrorHandler import ErrorHandler
+from RegisterSet import *
 import cargo
 import queue
 
@@ -8,7 +9,7 @@ class Core:
 
     ram : Ram = None
     error_handler : ErrorHandler = None
-    proc : object
+    register_set : RegisterSet
 
     instructions : dict
 
@@ -26,7 +27,7 @@ class Core:
         print(instruction)
 
         try:
-            ins_object = self.instructions[instruction](self.ram)
+            ins_object = self.instructions[instruction](self.ram, self.register_set)
             ins_object.parse_args(args)
             self.pipeline.put(ins_object)
         except cargo.exceptions.DependencyNotFound:
@@ -59,6 +60,10 @@ class Core:
     # Builder methods
     def connect_ram(self, ram : Ram):
         self.ram = ram
+
+    def connect_register_set(self, regs : RegisterSet):
+        self.register_set = regs
+
 
     # TODO
     def __register_instruction__(self, ins : Instruction):

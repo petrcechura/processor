@@ -1,6 +1,7 @@
 from Ram import *
 from ErrorHandler import *
 from Core import Core
+from RegisterSet import RegisterSet
 import time
 
 
@@ -8,6 +9,7 @@ class Processor:
 
     cores : list = []
     ram : Ram = None
+    register_set : RegisterSet
     
 
     # inner registers
@@ -37,8 +39,11 @@ class Processor:
         self.program_counter = 0
         self.clock_cycle = 0
         self.error_handler = ErrorHandler('Processor')
+        self.register_set = RegisterSet()
         for i in range(cores_cnt):
-            self.cores.append(Core())
+            c = Core()
+            c.connect_register_set(self.register_set)
+            self.cores.append(c)
 
     # take the program file, read it and execute it
     def load_program(self):

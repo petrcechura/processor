@@ -1,6 +1,7 @@
 from abc import *
 from enum import Enum
 from ErrorHandler import ErrorHandler
+from RegisterSet import *
 from Ram import Ram
 
 class Instruction(ABC):
@@ -10,16 +11,21 @@ class Instruction(ABC):
     # references to external classes
     error_handler : ErrorHandler
     ram : Ram
+    register_set : RegisterSet
 
     # given arguments
     args : list
 
-    def __init__(self, ram: Ram, phase_cnt : int = 3) -> None:
+    def __init__(self, ram: Ram, regs : RegisterSet, phase_cnt : int = 3) -> None:
         self.error_handler = ErrorHandler('Instruction {}'.format(self.__name__))
         self.connect_ram(ram)
+        self.coonect_register_set(regs)
 
     def connect_ram(self, ram : Ram):
         self.ram = ram
+
+    def coonect_register_set(self, regs : RegisterSet):
+        self.register_set = regs
 
     @abstractmethod
     def __exec__(self) -> None:
