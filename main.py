@@ -12,11 +12,9 @@ from Ram import *
 from ErrorHandler import *
 
 proc = Processor()
-core1 = Core()
 ram = Ram(10)
 
 proc.connect_ram(ram)
-proc.add_core(core1)
 proc.load_program()
 proc.exec_program()
 

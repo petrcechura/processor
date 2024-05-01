@@ -7,10 +7,10 @@ import queue
 class Core:
 
     ram : Ram = None
+    error_handler : ErrorHandler = None
+    proc : object
 
     instructions : dict
-
-    error_handler : ErrorHandler = None
 
     pipeline : queue.Queue = None
 
@@ -49,7 +49,7 @@ class Core:
             return 1
 
 
-    def __init__(self, pipeline_size : int = 1 ) -> None:
+    def __init__(self,  pipeline_size : int = 1 ) -> None:
         self.instructions = dict()
         self.pipeline = queue.Queue(pipeline_size)
         self.error_handler = ErrorHandler('Core')

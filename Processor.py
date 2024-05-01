@@ -1,5 +1,6 @@
 from Ram import *
 from ErrorHandler import *
+from Core import Core
 import time
 
 
@@ -7,7 +8,20 @@ class Processor:
 
     cores : list = []
     ram : Ram = None
-    registers : int
+    
+
+    # inner registers
+    _program_pointer_ : int
+
+    # --- REGISTERS API --- # TODO
+    def get_pp(self) -> int:
+        return self._program_pointer_
+    
+    def set_pp(self, val : int) -> None:
+        self._program_pointer_ = val
+
+    def incr_pp(self) -> None:
+        self._program_pointer_ = self.get_pp() + 1
 
     program : list = []
 
@@ -19,10 +33,12 @@ class Processor:
     clock_cycle : int
 
 
-    def __init__(self) -> None:
+    def __init__(self, cores_cnt : int = 1) -> None:
         self.program_counter = 0
         self.clock_cycle = 0
         self.error_handler = ErrorHandler('Processor')
+        for i in range(cores_cnt):
+            self.cores.append(Core())
 
     # take the program file, read it and execute it
     def load_program(self):
@@ -68,3 +84,5 @@ class Processor:
         self.ram = ram
         self.program_counter = self.ram.read(0)
 
+        for c in self.cores:
+            c.connect_ram(self.ram)
