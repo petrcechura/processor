@@ -14,7 +14,7 @@ from Core import *
 from Ram import *
 from ErrorHandler import *
 
-proc = Processor()
+proc = Processor(cores_cnt=2)
 ram = Ram(10)
 
 proc.connect_ram(ram)

@@ -1,7 +1,6 @@
 from Ram import *
 from ErrorHandler import *
 from Core import Core
-from RegisterSet import RegisterSet
 import time
 
 
@@ -9,28 +8,10 @@ class Processor:
 
     cores : list = []
     ram : Ram = None
-    register_set : RegisterSet
-    
-
-    # inner registers
-    _program_pointer_ : int
-
-    # --- REGISTERS API --- # TODO
-    def get_pp(self) -> int:
-        return self._program_pointer_
-    
-    def set_pp(self, val : int) -> None:
-        self._program_pointer_ = val
-
-    def incr_pp(self) -> None:
-        self._program_pointer_ = self.get_pp() + 1
 
     program : list = []
 
     error_handler : ErrorHandler = None
-
-    # the program counter is at ram address 0x00
-    program_counter : int = 0
 
     clock_cycle : int
 
@@ -39,50 +20,62 @@ class Processor:
         self.program_counter = 0
         self.clock_cycle = 0
         self.error_handler = ErrorHandler('Processor')
-        self.register_set = RegisterSet()
         for i in range(cores_cnt):
-            c = Core()
-            c.connect_register_set(self.register_set)
+            c = Core(i)
             self.cores.append(c)
 
     # take the program file, read it and execute it
+    # shall be able to properly split instructions among multiple cores
     def load_program(self):
-        #TODO
+
+        #TODO how to automatically divide instructions among multiple cores? Probably
+        # a complex task... Read about it.
+        # Maybe a separate class 'Sheduler' shall be created? (and assign visitor pattern)
         self.program = ["SET *05 5 ",
                         "SUB *05 1 *05",
                         "BRZ *05 4",
                         "JMP 1",
                         "SET *02 1",
                         "SET *07 9" ]
+        
+        program1 =      ["SET *05 5 ",
+                        "SUB *05 1 *05",
+                        "BRZ *05 4",
+                        "JMP 1",
+                        "SET *02 1",
+                        "SET *07 9" ]
+        
+        program2 =      ["SET *07 6",
+                         "SET *01 50",
+                         "SUB *07 *01 *04",
+                         "MOV *06 *05",]
 
+        # give core a code to execute
+        self.cores[0].append_code(program1)
+        self.cores[1].append_code(program2)
+        
+
+
+    # TODO the program should run until the pp_register does not reach the end of program...
+    # but what to do when we got multiple cores, each with its own pp? -- SOLVED
     def exec_program(self):
-        while(self.register_set.pp_get() < len(self.program)):
-            # read the current program counter value 
-            self.program_counter = self.ram.read(0)
 
-            # get the instruction
-            instruction = self.program[self.register_set.pp_get()]
-            
-            # try to exec instruction (if core is ready)
-            self.exec_line(instruction)
+        # while cores have a code to execute
+        while(self.cores_bussy()):
+
+            for c in self.cores:
+                c.clock()
 
             # clock
             self.clock_cycle = self.clock_cycle + 1
             time.sleep(0.5)
 
-    # dummy approach - find out something about that
-    def exec_line(self, line : str) -> bool:
-        if self.cores[0].get_core_status() == 0:
-            self.cores[0].exec_line(line)
-            return True
-        else:
-            print('NOP added')
-            return False
-
-    # builder method - add core to the processor
-    def add_core(self, core):
-        core.connect_ram(self.ram)
-        self.cores.append(core)
+    # Check whether the cores are bussy (running instructions) or not
+    def cores_bussy(self):
+        for c in self.cores:
+            if c.is_bussy():
+                return True
+        return False
 
     
     # pass a reference to the RAM
@@ -90,5 +83,6 @@ class Processor:
         self.ram = ram
         self.program_counter = self.ram.read(0)
 
+        # connect all cores to the same ram
         for c in self.cores:
             c.connect_ram(self.ram)

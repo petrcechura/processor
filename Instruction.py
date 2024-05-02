@@ -44,13 +44,13 @@ class Instruction(ABC):
                 _in = int(_in)
                 return self.ram.read(_in)
             else:
-                self.error_handler.handle('input address is not valid')
+                self.error_handler.error('input address is not valid')
         # input is number
         else:
             if _in.isnumeric():
                 return int(_in)
             else:
-                self.error_handler.handle('input value is not valid')
+                self.error_handler.error('input value is not valid')
 
 
     # take a string, extract address from it
@@ -58,8 +58,9 @@ class Instruction(ABC):
         if (_in[0] == '*') and _in[1:].isnumeric():
             return int(_in[1:])
         else:
-            self.error_handler.handle('the given string ({}) does not contain address'.format(_in))
+            self.error_handler.error('the given string ({}) does not contain address'.format(_in))
 
+    # TODO make this safe against bad syntax
     def parse_args(self, args : str):
         self.args = args.split(sep=' ')
     

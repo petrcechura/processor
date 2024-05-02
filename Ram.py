@@ -21,13 +21,13 @@ class Ram:
         if addr >= 0 and addr < self.RAM_SIZE:
             return self.data[addr]
         else:
-            self.error_handler.handle('read address out of range ({})'.format(addr))
+            self.error_handler.error('read address out of range ({})'.format(addr))
 
     def write(self, addr : int, value : int) -> None:
         if addr >= 0 and addr < self.RAM_SIZE:
             self.data[addr] = value
         else:
-            self.error_handler.handle('write address out of range ({})'.format(addr))
+            self.error_handler.error('write address out of range ({})'.format(addr))
 
     def clear(self):
         self.data = None
@@ -40,5 +40,5 @@ class Ram:
 
     def print(self):
         #TODO
-        print(self.data)
+        print('RAM: ' +  str(self.data))
 
