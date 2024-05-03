@@ -5,12 +5,12 @@ class Ram:
     
     data : list
 
-    error_handler : ErrorHandler
+    reporter : ErrorHandler
 
     RAM_SIZE : int
 
     def __init__(self, ram_size : int = 100) -> None:
-        self.error_handler = ErrorHandler('Ram')
+        self.reporter = ErrorHandler('Ram')
         self.RAM_SIZE = ram_size
 
         self.init()
@@ -21,13 +21,13 @@ class Ram:
         if addr >= 0 and addr < self.RAM_SIZE:
             return self.data[addr]
         else:
-            self.error_handler.error('read address out of range ({})'.format(addr))
+            self.reporter.error('read address out of range ({})'.format(addr))
 
     def write(self, addr : int, value : int) -> None:
         if addr >= 0 and addr < self.RAM_SIZE:
             self.data[addr] = value
         else:
-            self.error_handler.error('write address out of range ({})'.format(addr))
+            self.reporter.error('write address out of range ({})'.format(addr))
 
     def clear(self):
         self.data = None

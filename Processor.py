@@ -11,15 +11,14 @@ class Processor:
 
     program : list = []
 
-    error_handler : ErrorHandler = None
+    reporter : ErrorHandler = None
 
     clock_cycle : int
 
 
     def __init__(self, cores_cnt : int = 1) -> None:
-        self.program_counter = 0
         self.clock_cycle = 0
-        self.error_handler = ErrorHandler('Processor')
+        self.reporter = ErrorHandler('Processor')
         for i in range(cores_cnt):
             c = Core(i)
             self.cores.append(c)
@@ -79,9 +78,11 @@ class Processor:
 
     
     # pass a reference to the RAM
-    def connect_ram(self, ram : Ram):    
-        self.ram = ram
-        self.program_counter = self.ram.read(0)
+    def connect_ram(self, ram : Ram):
+        if isinstance(ram, Ram):    
+            self.ram = ram
+        else:
+            self.reporter.error('Connected RAM is not type of RAM! Your type: {}'.format(type(ram)))
 
         # connect all cores to the same ram
         for c in self.cores:

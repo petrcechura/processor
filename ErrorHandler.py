@@ -35,11 +35,12 @@ class ErrorHandler:
 
     def warning(self, s : str = 'undefined warning'):
         if self.warnings_print:
-            print("CLK({}) W: {}: {}".format(self.clock_cycle, self.prefix, s))
+            print("CLK({}) WARNING: {}: {}".format(self.clock_cycle, self.prefix, s))
 
     def error(self, s : str = 'undefined error'):
         if self.errors_print:
-            print("CLK({}) E: {}: {}".format(self.clock_cycle, self.prefix, s))
+            print("CLK({}) ERROR: {}: {}".format(self.clock_cycle, self.prefix, s))
+        exit()
 
     def setProgressPrintingOn(self, on = 1):
         self.progress_print = on

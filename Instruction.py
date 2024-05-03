@@ -9,23 +9,33 @@ class Instruction(ABC):
     __name__ : str
 
     # references to external classes
-    error_handler : ErrorHandler
+    reporter : ErrorHandler
     ram : Ram
     register_set : RegisterSet
 
     # given arguments
     args : list
 
-    def __init__(self, ram: Ram, regs : RegisterSet, phase_cnt : int = 3) -> None:
-        self.error_handler = ErrorHandler('Instruction {}'.format(self.__name__))
+    # phases
+    phase_cnt : int
+
+    def __init__(self, ram: Ram, regs : RegisterSet, phase_cnt : int = 1) -> None:
+        self.reporter = ErrorHandler('Instruction {}'.format(self.__name__))
+        self.phase_cnt = phase_cnt
         self.connect_ram(ram)
         self.coonect_register_set(regs)
 
     def connect_ram(self, ram : Ram):
-        self.ram = ram
+        if isinstance(ram, Ram):    
+            self.ram = ram
+        else:
+            self.reporter.error('Connected RAM is not type of RAM! Your type: {}'.format(type(ram)))
 
     def coonect_register_set(self, regs : RegisterSet):
-        self.register_set = regs
+        if isinstance(regs, RegisterSet):    
+            self.register_set = regs
+        else:
+            self.reporter.error('Connected register_set is not type of RegisterSet! Your type: {}'.format(type(regs)))
 
     @abstractmethod
     def __exec__(self) -> None:
@@ -44,13 +54,13 @@ class Instruction(ABC):
                 _in = int(_in)
                 return self.ram.read(_in)
             else:
-                self.error_handler.error('input address is not valid')
+                self.reporter.error('input address is not valid')
         # input is number
         else:
             if _in.isnumeric():
                 return int(_in)
             else:
-                self.error_handler.error('input value is not valid')
+                self.reporter.error('input value is not valid')
 
 
     # take a string, extract address from it
@@ -58,7 +68,7 @@ class Instruction(ABC):
         if (_in[0] == '*') and _in[1:].isnumeric():
             return int(_in[1:])
         else:
-            self.error_handler.error('the given string ({}) does not contain address'.format(_in))
+            self.reporter.error('the given string ({}) does not contain address'.format(_in))
 
     # TODO make this safe against bad syntax
     def parse_args(self, args : str):
@@ -101,6 +111,7 @@ class ADD(Instruction):
     addr : int
 
     __name__ = 'ADD'
+    phase_cnt = 3
 
     def __exec__(self) -> None:
         self.val1 = self.__get_value__(self.args[0])
