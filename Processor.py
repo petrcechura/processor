@@ -2,6 +2,7 @@ from Ram import *
 from ErrorHandler import *
 from Core import Core
 import time
+from typing import Protocol
 
 
 class Processor:
@@ -40,7 +41,6 @@ class Processor:
         program1 =      ["SET *05 5 ",
                         "SUB *05 1 *05",
                         "BRZ *05 4",
-                        "JMP 1",
                         "SET *02 1",
                         "SET *07 9" ]
         
@@ -51,7 +51,7 @@ class Processor:
 
         # give core a code to execute
         self.cores[0].append_code(program1)
-        self.cores[1].append_code(program2)
+        #self.cores[1].append_code(program2)
         
 
 
@@ -87,3 +87,9 @@ class Processor:
         # connect all cores to the same ram
         for c in self.cores:
             c.connect_ram(self.ram)
+
+
+
+
+class instr(Protocol):
+    pass

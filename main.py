@@ -19,21 +19,25 @@
 #       - inside an instructiona and doing certain actions depending on phase...
 #       - ...or cycles dont have to be counted and the current cycle will be passed into a instruction as argument (somehow)
 #           - but thats maybe not suitable since for every instruction there will be different phases
+#   - ALSO: program counter is now incremented inside instruction... but what if there will be 5 of them simultaenously?
+#       - the program counter management shall be processed in strict phase in every instruction
+
+# TODO The pipeline queue approach maybe isnt the best one... maybe just solve it with list of ref pointers, dunno
 
 
-from Processor import Processor
-from Core import *
-from Ram import *
-from ErrorHandler import *
+# TODO pipeline is now working, queue approach was used... but the code isnt as elegant as it could be. Add some dependency removals, but make sure only right
+# instructions shall be added to the core with pipeline
+#  -> pipeline size shall NOT be choosed in init function, doesnt make sense...
+#  -> pipeline size is heavily bounded to a certain processor, so pipeline size shall be choosed when inheriting a Processor class
 
-proc = Processor(cores_cnt=2)
-ram = Ram(10)
+
+from Jellyfish import *
+
+proc = Processor.Processor(cores_cnt=1)
+ram = Ram.Ram(10)
 
 proc.connect_ram(ram)
 proc.load_program()
 proc.exec_program()
 
 ram.print()
-
-print(proc.cores[0].get_pipeline_size())
-
