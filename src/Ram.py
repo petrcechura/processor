@@ -1,4 +1,4 @@
-from ErrorHandler import ErrorHandler
+from .ErrorHandler import ErrorHandler
 
 
 class Ram:

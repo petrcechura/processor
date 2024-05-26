@@ -30,14 +30,10 @@
 #  -> pipeline size shall NOT be choosed in init function, doesnt make sense...
 #  -> pipeline size is heavily bounded to a certain processor, so pipeline size shall be choosed when inheriting a Processor class
 
+# TODO Make the processor class ABC so the concrete processor implementations would be properly created from abstract classes (like uvm)
+from examples.SingleCoreProcessor import *
 
-from Jellyfish import *
+proc = SingleCoreProcessor()
 
-proc = Processor.Processor(cores_cnt=1)
-ram = Ram.Ram(10)
-
-proc.connect_ram(ram)
 proc.load_program()
 proc.exec_program()
-
-ram.print()

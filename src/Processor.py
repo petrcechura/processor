@@ -1,13 +1,17 @@
-from Ram import *
-from ErrorHandler import *
-from Core import Core
+from .Ram import Ram 
+from .ErrorHandler import ErrorHandler
+from .Core import Core
 import time
 from typing import Protocol
+from abc import *
 
 
-class Processor:
+class Processor(ABC):
 
+    # Core objects list
     cores : list = []
+
+    # Ram Object
     ram : Ram = None
 
     program : list = []
@@ -17,41 +21,31 @@ class Processor:
     clock_cycle : int
 
 
-    def __init__(self, cores_cnt : int = 1) -> None:
+    # Processor specific method that should be overriden to add more cores, connect RAM and ErrorHandler
+    @abstractmethod
+    def __setup__(self):
+        pass
+
+    def __init__(self) -> None:
         self.clock_cycle = 0
         self.reporter = ErrorHandler('Processor')
-        for i in range(cores_cnt):
-            c = Core(i)
-            self.cores.append(c)
+        self.__setup__()
+
+
+    def add_core(self, core : Core) -> None:
+        if isinstance(core, Core):
+            self.cores.append(core)
+        else:
+            self.reporter.error('That core cannot be added to a processor')
 
     # take the program file, read it and execute it
     # shall be able to properly split instructions among multiple cores
+    @abstractmethod
     def load_program(self):
-
+        pass
         #TODO how to automatically divide instructions among multiple cores? Probably
         # a complex task... Read about it.
         # Maybe a separate class 'Sheduler' shall be created? (and assign visitor pattern)
-        self.program = ["SET *05 5 ",
-                        "SUB *05 1 *05",
-                        "BRZ *05 4",
-                        "JMP 1",
-                        "SET *02 1",
-                        "SET *07 9" ]
-        
-        program1 =      ["SET *05 5 ",
-                        "SUB *05 1 *05",
-                        "BRZ *05 4",
-                        "SET *02 1",
-                        "SET *07 9" ]
-        
-        program2 =      ["SET *07 6",
-                         "SET *01 50",
-                         "SUB *07 *01 *04",
-                         "MOV *06 *05",]
-
-        # give core a code to execute
-        self.cores[0].append_code(program1)
-        #self.cores[1].append_code(program2)
         
 
 
@@ -87,9 +81,3 @@ class Processor:
         # connect all cores to the same ram
         for c in self.cores:
             c.connect_ram(self.ram)
-
-
-
-
-class instr(Protocol):
-    pass
